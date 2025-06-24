@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pedidos - Café da Manhã Villa Barril</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <div class="header-container">
+                <img src="/img/logo.png.png" alt="Logo" class="logo">
+            </div>
+            <i class="fas fa-coffee"></i> Pedido de Café da Manhã
+        </h1>
+        
+        <form id="breakfastForm">
+            <div class="grid-container">
+                <div class="form-group">
+                    <label for="barrelNumber" class="required-field">Número do Barril</label>
+                    <input type="text" id="barrelNumber" required placeholder="Ex: 123">
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerName" class="required-field">Seu Nome</label>
+                    <input type="text" id="customerName" required placeholder="Seu nome completo">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="deliveryTime" class="required-field">Horário de Entrega</label>
+                <input type="text" id="deliveryTime" required placeholder="Ex: 08h30">
+            </div>
+            
+            <h2>
+                <i class="fas fa-utensils"></i> Itens do Café da Manhã
+            </h2>
+            <p>Selecione a quantidade desejada para cada item:</p>
+            
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Itens serão adicionados via JavaScript -->
+                </tbody>
+            </table>
+            
+            <div class="form-group">
+                <label for="observations">
+                    <i class="fas fa-comment-alt"></i> Observações
+                </label>
+                <textarea id="observations" rows="3" placeholder="Alguma observação especial? Ex: Sem glúten, sem lactose..."></textarea>
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                <i class="fab fa-whatsapp"></i> Enviar Pedido
+            </button>
+            
+            <div id="whatsappLink">
+                <p><i class="fas fa-check-circle"></i> Seu pedido está pronto para ser enviado!</p>
+                <a id="whatsappButton" href="#" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Abrir no WhatsApp
+                </a>
+                <p>Se o botão não funcionar automaticamente, copie a mensagem abaixo e envie manualmente:</p>
+                <textarea id="generatedMessage" readonly></textarea>
+                <button class="copy-btn" id="copyBtn">
+                    <i class="fas fa-copy"></i> Copiar Mensagem
+                </button>
+                <p class="success-message" id="copySuccess">
+                    <i class="fas fa-check"></i> Mensagem copiada com sucesso!
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Itens do menu
+        const menuItems = [
+            "Misto quente", "Queijo quente", "Presunto", "Mussarela", "Queijo Minas",
+            "Manteiga", "Requeijão", "Geleia", "Mel", "Achocolatado em pó",
+            "Pão de queijo", "Frutas da estação", "Pamonha", "Bolo", "Pão francês",
+            "Leite", "Leite sem Lactose", "Suco de Laranja", "Iogurte", "Granola",
+            "Café Coado", "Ovos Fritos", "Omelete", "Ovos Mexidos", 
+            "Tapioca de Queijo minas", "Tapioca de presunto e queijo"
+        ];
+
+        // Preenche a tabela com os itens
+        const tableBody = document.querySelector('#itemsTable tbody');
+        menuItems.forEach(item => {
+            const row = document.createElement('tr');
+            
+            const nameCell = document.createElement('td');
+            nameCell.textContent = item;
+            row.appendChild(nameCell);
+            
+            // Adiciona opções de quantidade (0 a 4)
+            for (let i = 0; i <= 4; i++) {
+                const qtyCell = document.createElement('td');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = item.replace(/\s+/g, '_');
+                radio.value = i;
+                radio.id = `${item.replace(/\s+/g, '_')}_${i}`;
+                
+                if (i === 0) {
+                    radio.checked = true;
+                }
+                
+                const label = document.createElement('label');
+                label.htmlFor = radio.id;
+                label.textContent = i;
+                
+                qtyCell.appendChild(radio);
+                qtyCell.appendChild(label);
+                row.appendChild(qtyCell);
+            }
+            
+            tableBody.appendChild(row);
+        });
+
+        // Envia o formulário
+        document.getElementById('breakfastForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Mostrar loading no botão
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            submitBtn.disabled = true;
+            
+            // Coleta dados básicos
+            const barrelNumber = document.getElementById('barrelNumber').value;
+            const customerName = document.getElementById('customerName').value;
+            const deliveryTime = document.getElementById('deliveryTime').value;
+            const observations = document.getElementById('observations').value;
+            
+            // Coleta itens selecionados (apenas os com quantidade > 0)
+            let selectedItems = [];
+            menuItems.forEach(item => {
+                const itemName = item.replace(/\s+/g, '_');
+                const selectedRadio = document.querySelector(`input[name="${itemName}"]:checked`);
+                if (selectedRadio && selectedRadio.value > 0) {
+                    selectedItems.push(`➤ ${item}: ${selectedRadio.value}`);
+                }
+            });
+            
+            // Verifica se há itens selecionados
+            if (selectedItems.length === 0) {
+                alert('Por favor, selecione pelo menos um item para o pedido.');
+                submitBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Enviar Pedido';
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            // Monta mensagem formatada
+            const whatsappMessage = `*🍽️ NOVO PEDIDO DE CAFÉ DA MANHÃ* 🍞☕\n\n` +
+                                `*📍 Barril:* ${barrelNumber}\n` +
+                                `*👤 Responsável:* ${customerName}\n` +
+                                `*⏰ Horário de entrega:* ${deliveryTime}\n\n` +
+                                `*📋 ITENS PEDIDOS:*\n${selectedItems.join('\n')}\n\n` +
+                                `${observations ? `*📝 Observações:*\n${observations}\n\n` : ''}` +
+                                `_📅 Pedido registrado em ${new Date().toLocaleString('pt-BR')}_`;
+            
+            // Mostra a mensagem e o link
+            document.getElementById('generatedMessage').value = whatsappMessage;
+            
+            // Número do administrador (substitua pelo número real)
+            const adminNumber = "5535910172566";
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const whatsappUrl = `https://wa.me/${adminNumber}?text=${encodedMessage}`;
+            
+            // Configura o link do WhatsApp
+            document.getElementById('whatsappButton').href = whatsappUrl;
+            
+            // Tenta enviar automaticamente (pode ser bloqueado pelo navegador)
+            try {
+                // Tentativa de abrir automaticamente em nova aba
+                const newWindow = window.open(whatsappUrl, '_blank');
+                
+                if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                    // Se bloqueado, mostra a seção com o link manual
+                    document.getElementById('whatsappLink').style.display = 'block';
+                    document.getElementById('whatsappLink').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    // Se abriu com sucesso, reseta o formulário após 2 segundos
+                    setTimeout(() => {
+                        e.target.reset();
+                        document.querySelectorAll('input[type="radio"][value="0"]').forEach(radio => {
+                            radio.checked = true;
+                        });
+                    }, 2000);
+                }
+            } catch (e) {
+                // Em caso de erro, mostra a seção manual
+                document.getElementById('whatsappLink').style.display = 'block';
+                document.getElementById('whatsappLink').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Restaura o botão
+            submitBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Enviar Pedido';
+            submitBtn.disabled = false;
+        });
+
+        // Botão para copiar mensagem
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const messageTextarea = document.getElementById('generatedMessage');
+            messageTextarea.select();
+            document.execCommand('copy');
+            
+            // Mostra mensagem de sucesso
+            const copySuccess = document.getElementById('copySuccess');
+            copySuccess.style.display = 'block';
+            
+            // Esconde após 3 segundos
+            setTimeout(() => {
+                copySuccess.style.display = 'none';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
