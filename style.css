@@ -1,6 +1,6 @@
 :root {
             --primary: #25D366;
-            --primary-dark: #128C7E;
+            --primary-dark: #e45b11;
             --secondary: #FFA500;
             --light: #f8f9fa;
             --dark: #343a40;
@@ -32,7 +32,14 @@
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
         }
-
+        .logo {
+            flex: 0 1 auto; 
+            max-width: 100%; 
+            height: auto; 
+            width: auto; 
+            max-height: 80px; 
+        }
+        
         h1, h2, h3 {
             color: var(--primary-dark);
             margin-bottom: 1rem;
