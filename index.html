@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Pedidos - Café da Manhã</title>
+    <title>Sistema de Pedidos - Café da Manhã Villa Barril</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -12,6 +12,9 @@
 <body>
     <div class="container">
         <h1>
+            <div class="header-container">
+                <img src="/img/logo.png.png" alt="Logo" class="logo">
+            </div>
             <i class="fas fa-coffee"></i> Pedido de Café da Manhã
         </h1>
         
@@ -41,12 +44,10 @@
             <table id="itemsTable">
                 <thead>
                     <tr>
-                        <th>Item</th>
+                        <th>Item para uma ou duas pessoas</th>
                         <th>0</th>
                         <th>1</th>
                         <th>2</th>
-                        <th>3</th>
-                        <th>4</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,7 +104,7 @@
             row.appendChild(nameCell);
             
             // Adiciona opções de quantidade (0 a 4)
-            for (let i = 0; i <= 4; i++) {
+            for (let i = 0; i <= 2; i++) {
                 const qtyCell = document.createElement('td');
                 const radio = document.createElement('input');
                 radio.type = 'radio';
@@ -173,7 +174,7 @@
             document.getElementById('generatedMessage').value = whatsappMessage;
             
             // Número do administrador (substitua pelo número real)
-            const adminNumber = "5535984687353";
+            const adminNumber = "553591072566";
             const encodedMessage = encodeURIComponent(whatsappMessage);
             const whatsappUrl = `https://wa.me/${adminNumber}?text=${encodedMessage}`;
             
