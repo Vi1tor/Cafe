@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Pedidos - Café da Manhã Villa Barril</title>
+    <title>Café da Manhã Villa Barril</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -39,7 +38,7 @@
             <h2>
                 <i class="fas fa-utensils"></i> Itens do Café da Manhã Villa Barril
             </h2>
-            <p>Selecione a quantidade desejada para cada item:</p>
+            <p>Selecione 1 para 1 pessoa / 2 para 2 pessoas !</p>
             
             <table id="itemsTable">
                 <thead>
@@ -54,6 +53,10 @@
                     <!-- Itens serão adicionados via JavaScript -->
                 </tbody>
             </table>
+
+            <div id="itemCount">
+                <p>Total de itens selecionados: <span id="totalCount">0</span></p>
+            </div>
             
             <div class="form-group">
                 <label for="observations">
@@ -66,7 +69,7 @@
                 <i class="fab fa-whatsapp"></i> Enviar Pedido
             </button>
             
-            <div id="whatsappLink">
+            <div id="whatsappLink" style="display: none;">
                 <p><i class="fas fa-check-circle"></i> Seu pedido está pronto para ser enviado!</p>
                 <a id="whatsappButton" href="#" target="_blank">
                     <i class="fab fa-whatsapp"></i> Abrir no WhatsApp
@@ -76,7 +79,7 @@
                 <button class="copy-btn" id="copyBtn">
                     <i class="fas fa-copy"></i> Copiar Mensagem
                 </button>
-                <p class="success-message" id="copySuccess">
+                <p class="success-message" id="copySuccess" style="display: none;">
                     <i class="fas fa-check"></i> Mensagem copiada com sucesso!
                 </p>
             </div>
@@ -103,7 +106,7 @@
             nameCell.textContent = item;
             row.appendChild(nameCell);
             
-            // Adiciona opções de quantidade (0 a 4)
+            // Adiciona opções de quantidade (0 a 2)
             for (let i = 0; i <= 2; i++) {
                 const qtyCell = document.createElement('td');
                 const radio = document.createElement('input');
@@ -127,6 +130,31 @@
             
             tableBody.appendChild(row);
         });
+
+        // Função para atualizar a contagem total
+        function updateItemCount() {
+            let totalCount = 0;
+            menuItems.forEach(item => {
+                const itemName = item.replace(/\s+/g, '_');
+                const selectedRadio = document.querySelector(`input[name="${itemName}"]:checked`);
+                if (selectedRadio) {
+                    totalCount += parseInt(selectedRadio.value);
+                }
+            });
+            document.getElementById('totalCount').textContent = totalCount;
+        }
+
+        // Adiciona evento de mudança para cada rádio
+        menuItems.forEach(item => {
+            const itemName = item.replace(/\s+/g, '_');
+            const radios = document.querySelectorAll(`input[name="${itemName}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', updateItemCount);
+            });
+        });
+
+        // Chama a função para inicializar a contagem
+        updateItemCount();
 
         // Envia o formulário
         document.getElementById('breakfastForm').addEventListener('submit', function(e) {
@@ -197,6 +225,7 @@
                         document.querySelectorAll('input[type="radio"][value="0"]').forEach(radio => {
                             radio.checked = true;
                         });
+                        updateItemCount(); // Atualiza a contagem após resetar
                     }, 2000);
                 }
             } catch (e) {
