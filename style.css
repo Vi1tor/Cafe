@@ -5,7 +5,7 @@
             --light: #f8f9fa;
             --dark: #d38208;
             --gray: #6c757d;
-            --light-gray: #e9ecef;
+            --light-gray: #d67915;
             --border-radius: 8px;
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
@@ -37,7 +37,8 @@
             max-width: 100%; 
             height: auto; 
             width: auto; 
-            max-height: 150px; 
+            max-height: 150px;
+            
         }
         
         h1, h2, h3 {
