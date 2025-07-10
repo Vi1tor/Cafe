@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Pedidos - Café da Manhã Villa Barril</title>
+    <title>Café da Manhã Villa Barril</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -13,12 +12,11 @@
     <div class="container">
         <h1>
             <div class="header-container">
-                <img src="/img/logo.png.png" alt="Logo" class="logo">
+                <img src="/img/logo.png" alt="Logo" class="logo">
             </div>
             <i class="fas fa-coffee"></i> Pedido de Café da Manhã
         </h1>
-        
-        <form id="breakfastForm">
+        <form id="breakfastForm" class="tab active" id="orderTab">
             <div class="grid-container">
                 <div class="form-group">
                     <label for="barrelNumber" class="required-field">Número do Barril</label>
@@ -37,9 +35,9 @@
             </div>
             
             <h2>
-                <i class="fas fa-utensils"></i> Itens do Café da Manhã
+                <i class="fas fa-utensils"></i> Itens do Café da Manhã Villa Barril
             </h2>
-            <p>Selecione a quantidade desejada para cada item:</p>
+            <p>Selecione 1 para 1 pessoa / 2 para 2 pessoas !</p>
             
             <table id="itemsTable">
                 <thead>
@@ -54,6 +52,10 @@
                     <!-- Itens serão adicionados via JavaScript -->
                 </tbody>
             </table>
+
+            <div id="itemCount">
+                <p>Total de itens selecionados: <span id="totalCount">0</span></p>
+            </div>
             
             <div class="form-group">
                 <label for="observations">
@@ -61,12 +63,12 @@
                 </label>
                 <textarea id="observations" rows="3" placeholder="Alguma observação especial? Ex: Sem glúten, sem lactose..."></textarea>
             </div>
-            
+
             <button type="submit" id="submitBtn">
                 <i class="fab fa-whatsapp"></i> Enviar Pedido
             </button>
             
-            <div id="whatsappLink">
+            <div id="whatsappLink" style="display: none;">
                 <p><i class="fas fa-check-circle"></i> Seu pedido está pronto para ser enviado!</p>
                 <a id="whatsappButton" href="#" target="_blank">
                     <i class="fab fa-whatsapp"></i> Abrir no WhatsApp
@@ -76,11 +78,19 @@
                 <button class="copy-btn" id="copyBtn">
                     <i class="fas fa-copy"></i> Copiar Mensagem
                 </button>
-                <p class="success-message" id="copySuccess">
+                <p class="success-message" id="copySuccess" style="display: none;">
                     <i class="fas fa-check"></i> Mensagem copiada com sucesso!
                 </p>
             </div>
         </form>
+
+        <div class="tab" id="photosTab">
+            <h2>
+                <i class="fas fa-camera"></i> Fotos do Café da Manhã
+            </h2>
+            <input type="file" id="breakfastPhotos" accept="image/*" multiple>
+            <div class="photo-gallery" id="photoGallery"></div>
+        </div>
     </div>
 
     <script>
@@ -96,37 +106,66 @@
 
         // Preenche a tabela com os itens
         const tableBody = document.querySelector('#itemsTable tbody');
-        menuItems.forEach(item => {
-            const row = document.createElement('tr');
-            
-            const nameCell = document.createElement('td');
-            nameCell.textContent = item;
-            row.appendChild(nameCell);
-            
-            // Adiciona opções de quantidade (0 a 4)
-            for (let i = 0; i <= 2; i++) {
-                const qtyCell = document.createElement('td');
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = item.replace(/\s+/g, '_');
-                radio.value = i;
-                radio.id = `${item.replace(/\s+/g, '_')}_${i}`;
+        function populateItemsTable() {
+            menuItems.forEach(item => {
+                const row = document.createElement('tr');
                 
-                if (i === 0) {
-                    radio.checked = true;
+                const nameCell = document.createElement('td');
+                nameCell.textContent = item;
+                row.appendChild(nameCell);
+                
+                // Adiciona opções de quantidade (0 a 2)
+                for (let i = 0; i <= 2; i++) {
+                    const qtyCell = document.createElement('td');
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = item.replace(/\s+/g, '_');
+                    radio.value = i;
+                    radio.id = `${item.replace(/\s+/g, '_')}_${i}`;
+                    
+                    if (i === 0) {
+                        radio.checked = true;
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = radio.id;
+                    label.textContent = i;
+                    
+                    qtyCell.appendChild(radio);
+                    qtyCell.appendChild(label);
+                    row.appendChild(qtyCell);
                 }
                 
-                const label = document.createElement('label');
-                label.htmlFor = radio.id;
-                label.textContent = i;
-                
-                qtyCell.appendChild(radio);
-                qtyCell.appendChild(label);
-                row.appendChild(qtyCell);
-            }
-            
-            tableBody.appendChild(row);
+                tableBody.appendChild(row);
+            });
+        }
+
+        populateItemsTable(); // Preenche a tabela ao carregar
+
+        // Função para atualizar a contagem total
+        function updateItemCount() {
+            let totalCount = 0;
+            menuItems.forEach(item => {
+                const itemName = item.replace(/\s+/g, '_');
+                const selectedRadio = document.querySelector(`input[name="${itemName}"]:checked`);
+                if (selectedRadio) {
+                    totalCount += parseInt(selectedRadio.value);
+                }
+            });
+            document.getElementById('totalCount').textContent = totalCount;
+        }
+
+        // Adiciona evento de mudança para cada rádio
+        menuItems.forEach(item => {
+            const itemName = item.replace(/\s+/g, '_');
+            const radios = document.querySelectorAll(`input[name="${itemName}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', updateItemCount);
+            });
         });
+
+        // Chama a função para inicializar a contagem
+        updateItemCount();
 
         // Envia o formulário
         document.getElementById('breakfastForm').addEventListener('submit', function(e) {
@@ -161,14 +200,16 @@
                 return;
             }
             
-            // Monta mensagem formatada
+            
             const whatsappMessage = `*🍽️ NOVO PEDIDO DE CAFÉ DA MANHÃ* 🍞☕\n\n` +
-                                `*📍 Barril:* ${barrelNumber}\n` +
-                                `*👤 Responsável:* ${customerName}\n` +
-                                `*⏰ Horário de entrega:* ${deliveryTime}\n\n` +
-                                `*📋 ITENS PEDIDOS:*\n${selectedItems.join('\n')}\n\n` +
-                                `${observations ? `*📝 Observações:*\n${observations}\n\n` : ''}` +
-                                `_📅 Pedido registrado em ${new Date().toLocaleString('pt-BR')}_`;
+                        `*📍 Barril:* ${barrelNumber}\n` +
+                        `*👤 Responsável:* ${customerName}\n` +
+                        `*⏰ Horário de entrega:* ${deliveryTime}\n` +
+                        `*📊 Total de itens selecionados:* ${totalCount}\n\n` + // Adicionando a contagem total
+                        `*📋 ITENS PEDIDOS:*\n${selectedItems.join('\n')}\n\n` +
+                        `${observations ? `*📝 Observações:*\n${observations}\n\n` : ''}` +
+                        `_📅 Pedido registrado em ${new Date().toLocaleString('pt-BR')}_`;
+
             
             // Mostra a mensagem e o link
             document.getElementById('generatedMessage').value = whatsappMessage;
@@ -197,6 +238,7 @@
                         document.querySelectorAll('input[type="radio"][value="0"]').forEach(radio => {
                             radio.checked = true;
                         });
+                        updateItemCount(); // Atualiza a contagem após resetar
                     }, 2000);
                 }
             } catch (e) {
@@ -224,6 +266,42 @@
             setTimeout(() => {
                 copySuccess.style.display = 'none';
             }, 3000);
+        });
+
+        // Função para alternar entre as abas
+        document.querySelectorAll('.tab-links').forEach(link => {
+            link.addEventListener('click', function() {
+                // Remove a classe ativa de todas as abas
+                document.querySelectorAll('.tab-links').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+                // Adiciona a classe ativa à aba clicada
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+
+                // Atualiza a contagem de itens ao voltar para a aba de pedido
+                if (tabId === 'orderTab') {
+                    updateItemCount();
+                }
+            });
+        });
+
+        // Adiciona evento para mostrar as fotos
+        document.getElementById('breakfastPhotos').addEventListener('change', function() {
+            const gallery = document.getElementById('photoGallery');
+            gallery.innerHTML = ''; // Limpa a galeria antes de adicionar novas fotos
+            const files = this.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    gallery.appendChild(img);
+                }
+                reader.readAsDataURL(files[i]);
+            }
         });
     </script>
 </body>
