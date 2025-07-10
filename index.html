@@ -12,7 +12,7 @@
     <div class="container">
         <h1>
             <div class="header-container">
-                <img src="/img/logo.png" algt="Logo" class="logo">
+                <img src="/img/logo.png" alt="Logo" class="logo">
             </div>
             <i class="fas fa-coffee"></i> Pedido de Café da Manhã
         </h1>
@@ -85,6 +85,7 @@
         ];
 
         const tableBody = document.querySelector('#itemsTable tbody');
+
         function populateItemsTable() {
             menuItems.forEach(item => {
                 const row = document.createElement('tr');
@@ -121,8 +122,8 @@
             menuItems.forEach(item => {
                 const itemName = item.replace(/\s+/g, '_');
                 const selectedRadio = document.querySelector(`input[name="${itemName}"]:checked`);
-                if (selectedRadio) {
-                    totalCount += parseInt(selectedRadio.value);
+                if (selectedRadio && selectedRadio.value > 0) {
+                    totalCount++;
                 }
             });
             document.getElementById('totalCount').textContent = totalCount;
@@ -131,7 +132,6 @@
         populateItemsTable();
         updateItemCount();
 
-        // Monitorar todos os radios
         menuItems.forEach(item => {
             const itemName = item.replace(/\s+/g, '_');
             document.querySelectorAll(`input[name="${itemName}"]`).forEach(radio => {
@@ -152,11 +152,14 @@
             const observations = document.getElementById('observations').value;
 
             let selectedItems = [];
+            let totalCount = 0;
+
             menuItems.forEach(item => {
                 const itemName = item.replace(/\s+/g, '_');
                 const selectedRadio = document.querySelector(`input[name="${itemName}"]:checked`);
                 if (selectedRadio && selectedRadio.value > 0) {
                     selectedItems.push(`➤ ${item}: ${selectedRadio.value}`);
+                    totalCount++; // Conta apenas o item selecionado
                 }
             });
 
@@ -166,13 +169,6 @@
                 submitBtn.disabled = false;
                 return;
             }
-
-            // 🔧 Calcular totalCount corretamente
-            let totalCount = 0;
-            selectedItems.forEach(item => {
-                const match = item.match(/: (\d+)/);
-                if (match) totalCount += parseInt(match[1]);
-            });
 
             const whatsappMessage = `*🍽️ NOVO PEDIDO DE CAFÉ DA MANHÃ* 🍞☕\n\n` +
                 `*📍 Barril:* ${barrelNumber}\n` +
