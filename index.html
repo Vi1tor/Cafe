@@ -135,9 +135,9 @@
         populateItemsTable(); // Preenche a tabela ao carregar
 
         // Função para atualizar a contagem total
-        function updateItemCount() {
+        const updateItemCount = () => {
             let totalCount = 0;
-            menuItems.forEach(item => {
+            menuItems.forEach((item) => {
                 const itemName = item.replace(/\s+/g, '_');
                 const selectedRadio = document.querySelector(`input[name="${itemName}"]:checked`);
                 if (selectedRadio) {
@@ -245,7 +245,7 @@
         });
 
         // Botão para copiar mensagem
-        document.getElementById('copyBtn').addEventListener('click', function() {
+        document.getElementById('copyBtn').addEventListener('click', ()=> {
             const messageTextarea = document.getElementById('generatedMessage');
             messageTextarea.select();
             document.execCommand('copy');
