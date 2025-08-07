@@ -7,17 +7,17 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f4;
-    color: #d7ae3f;
+    background-color: #887725c4;
+    color: #b66b15e1;
 }
 
 .container {
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
-    background: #fff;
+    background: #ede4c9;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(156, 119, 32, 0.842);
 }
 
 .header-container {
@@ -83,7 +83,7 @@ table {
 th, td {
     padding: 10px;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid #181818;
 }
 
 th {
@@ -100,7 +100,7 @@ button {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 20px 25px;
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
