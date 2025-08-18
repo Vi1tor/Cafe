@@ -1,7 +1,7 @@
 const menuItems = [
-            "Misto quente", "Queijo quente", "Presunto", "Mussarela", "Queijo Minas",
-            "Manteiga", "Requeijão", "Geleia", "Mel", "Achocolatado em pó",
-            "Pão de queijo", "Frutas da estação", "Pamonha", "Bolo", "Pão francês",
+            "Misto quente", "Queijo quente", "Pão francês", "Mussarela", "Presunto",
+            "Queijo Minas", "Manteiga", "Requeijão", "Geleia", "Mel", "Pão de queijo",
+            "Frutas da estação", "Bolo", "Achocolatado em pó", "Pamonha",
             "Leite", "Leite sem Lactose", "Suco de Laranja", "Iogurte", "Granola",
             "Café Coado", "Ovos Fritos", "Omelete", "Ovos Mexidos", 
             "Tapioca de Queijo minas", "Tapioca de presunto e queijo"
